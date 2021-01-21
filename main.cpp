@@ -1,4 +1,5 @@
 #include "mbed.h"
+#include "max32630fthr.h"
 #include "MotorDriver.h"
 
 // main() runs in its own thread in the OS
@@ -9,9 +10,12 @@ int main()
     // assign motor number
     motor1.motorNum = 1;
     // assign motor pin
-    motor1.pinA = LED1;
+    motor1.pinNum = LED1;
+
+    float duty = 0.50;
     // set motor duty cycle
-    motor1.setDuty(50);
+    motor1.setDuty(duty);
+    motor1.printduty();
 
     return 0;
 };

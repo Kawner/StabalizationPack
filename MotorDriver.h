@@ -1,16 +1,27 @@
 #include "mbed.h"
+#include "max32630fthr.h"
 
 // class motor defines a motor object
 class motor {
     public:
         int motorNum;
-        timer ;
-        pin
-        PwmOut led(int pinA);
+        PwmOut pinNum;
+    
+    private:
+        float duty;
+        
 
     void setDuty(float duty){
-        
-        // sets the duty cycle for vibrational motor PWM
-        digitalWrite(pin,duty);
+
+        pinNum.write(duty);
+        motor::duty = duty;
+
     };
+
+    void printDuty(){
+
+        printf("Motor %i current duty cycle: %f", motor::motorNum, motor::duty);
+
+    }
+
 };
