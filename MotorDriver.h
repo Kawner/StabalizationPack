@@ -4,31 +4,36 @@
 // class motor defines a motor object
 class motor {
     public:
+    // Constructor prints startup messages
     motor(){
         printf("\r\n");
         printf("Motor object created \r\n");
         printf("Please assign motor number and pin\r\n");
         printf("\r\n");
     }
-        
+        // Assign identifying number with which to keep track of motor object
         int motorNum;
+        // Assign output pin used to send PWM signal to motor from MAX32630FTHR
         PinName pinNum;
-        PwmOut led(PinName pinNum);
-        float duty = 0.99;
-        
-    void setDuty(float duty_in){
+        // Initialize PWM pin
+        PwmOut pwmout_init(pwmout_t *pwmPin, PinName pinNum);
+        float curduty = pwmout_read(pwmout_t *pwmPin);
 
-        duty = duty_in;
+
+    void setDuty(float duty){
+
         printf("PinNum: %i \r\n", pinNum);
-        PwmOut led(pinNum);
-        led.write(duty_in);
+        printf("New duty cycle: %f", duty);
+        pwmout_write(pwmout_t *pinOut, duty);
     
     };
 
     void printDuty(){
 
+        float curduty = pwmout_read(pwmout_t *pwmPin);
+
         printf("Motor %i ", motorNum);
-        printf("current duty cycle: %0.2f", duty);
+        printf("current duty cycle: %0.2f %% \r\n", curduty);
 
     }
 
