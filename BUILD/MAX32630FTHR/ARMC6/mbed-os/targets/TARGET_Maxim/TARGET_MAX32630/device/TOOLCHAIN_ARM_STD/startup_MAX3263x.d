@@ -1,0 +1,3 @@
+BUILD\MAX32630FTHR\ARMC6\mbed-os\targets\TARGET_Maxim\TARGET_MAX32630\device\TOOLCHAIN_ARM_STD\startup_MAX3263x.o: \
+  mbed-os\targets\TARGET_Maxim\TARGET_MAX32630\device\TOOLCHAIN_ARM_STD\startup_MAX3263x.S \
+  BUILD\MAX32630FTHR\ARMC6\mbed_config.h
