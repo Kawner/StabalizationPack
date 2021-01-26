@@ -1,39 +1,52 @@
 #include "mbed.h"
-#include "max32630fthr.h"
+#include"MAX32630FTHR_PwmOut.h"
 
-// class motor defines a motor object
-class motor {
+
+// class motor creates a vibrational motor object which is controlled through PWM
+class motor : virtual public MAX32630FTHR_PwmOut {
     public:
-    // Constructor prints startup messages
-    motor(){
-        printf("\r\n");
-        printf("Motor object created \r\n");
-        printf("Please assign motor number and pin\r\n");
-        printf("\r\n");
-    }
-        // Assign identifying number with which to keep track of motor object
-        int motorNum;
+        // Motor designator
+        int num;
+
+    // Constructor accepts and assigns motor designation number and pin to PWM variable
+    motor(int motorNum, PinName pinNum) : MAX32630FTHR_PwmOut(pinNum)
+    {  
+        // Constructor input gives designation number to motor object
+        num = motorNum;
+        printf("\r\nMotor assigned number %i \r\n", num);
+
         // Assign output pin used to send PWM signal to motor from MAX32630FTHR
-        PinName pinNum;
-        // Initialize PWM pin
-        PwmOut pwmout_init(pwmout_t *pwmPin, PinName pinNum);
-        float curduty = pwmout_read(pwmout_t *pwmPin);
+        // pin = MAX32630FTHR_PwmOut(pinNum);
+        printf("Pin %i assigned for motor %i PWM output \r\n", pinNum, num);
+        printf("\r\n");
+    }   
+
+    void enable(){
+
+        this->unlock_deep_sleep();
+        printf("Motor enabled");
+        
+    }    
+
+    void disable(){
+
+        this->lock_deep_sleep();
+        printf("Motor disabled");
+
+    }
+
+    void setDuty(float newDuty){
 
 
-    void setDuty(float duty){
-
-        printf("PinNum: %i \r\n", pinNum);
-        printf("New duty cycle: %f", duty);
-        pwmout_write(pwmout_t *pinOut, duty);
+        printf("Motor %i duty cycle set to: %F", num, newDuty);
+        this->write(newDuty);
     
-    };
+    }
 
     void printDuty(){
 
-        float curduty = pwmout_read(pwmout_t *pwmPin);
-
-        printf("Motor %i ", motorNum);
-        printf("current duty cycle: %0.2f %% \r\n", curduty);
+        float currDuty = this->read();
+        printf("Motor %i current duty cycle: %0.2F %% \r\n", num, currDuty);
 
     }
 

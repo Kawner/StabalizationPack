@@ -5,4 +5,4 @@ projectfiles
 mbed-os
 BUILD
 
-max32630fthr
+MAX32630FTHR_PwmOut
