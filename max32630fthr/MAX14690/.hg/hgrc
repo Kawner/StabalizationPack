@@ -1,6 +1,6 @@
 # example repository config (see 'hg help config' for more info)
 [paths]
-mbed-studio-cache = c:\Users\Miles\AppData\Local\Mbed Studio\library-cache\os.mbed.com\teams\MaximIntegrated\code\MAX14690
+mbed-studio-cache = c:\Users\ben_p\AppData\Local\Mbed Studio\library-cache\os.mbed.com\teams\MaximIntegrated\code\MAX14690
 default = http://os.mbed.com/teams/MaximIntegrated/code/MAX14690/
 
 # path aliases to other clones of this repo in URLs or filesystem paths
