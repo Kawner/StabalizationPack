@@ -68,7 +68,9 @@ void myAlgorithm(float ac_x, float ac_y, float ac_z, float gy_x, float gy_y, flo
 
 }
 
-int main()
+
+int algMain()
+
 {
     // Initialise the digital pin LED1 as an output
     DigitalOut led(LED2);
