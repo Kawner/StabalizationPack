@@ -34,21 +34,20 @@ float K_p = 100*(PWM_cap/100)/(TILT_LIM-SAFEZONE);
 
 //create a PWM clamp function - keep it between 0 and the set maximum!
 int clamp(float value) {
-    if(value>=PWM_cap) {
-        int value = PWM_cap;
-    } else if (value <= 0) {
-        int value = 0;
+    if(value <= 0) {
+        return 0;
+    } else if (value >= PWM_cap) {
+        return PWM_cap;
     } else {
-        int value = int(value);
+        return int(value);
     }
-    return value;
 }
 
 // Create the algorithm function that runs in infinite while loop
 void myAlgorithm(float ac_x, float ac_y, float ac_z, float gy_x, float gy_y, float gy_z)
 {
     // First task is to interpret the inputs
-    float myMagnitude = sqrt(gy_x*gy_x + gy_y*gy_y);
+    int myMagnitude = sqrt(gy_x*gy_x + gy_y*gy_y);
     float myAngle = atan2(ac_y, ac_x);
     
     // Second task is to build a radial system that gradually adjusts the individual motor's strength. 
@@ -64,29 +63,7 @@ void myAlgorithm(float ac_x, float ac_y, float ac_z, float gy_x, float gy_y, flo
         int AutoDuty_6 = clamp(K_p*(myMagnitude-SAFEZONE)*cos(myAngle-motor6_angle)); // Autoduty for motor 0
         int AutoDuty_7 = clamp(K_p*(myMagnitude-SAFEZONE)*cos(myAngle-motor7_angle)); // Autoduty for motor 0
     }
+
     // Third task is to run Miles' set duty motor functions
 
 }
-
-
-int algMain()
-
-{
-    // Initialise the digital pin LED1 as an output
-    DigitalOut led(LED2);
-
-    // 
-    printf("K_p controller gain set to: %f", K_p);
-
-    while (true) {
-        led = !led;
-        ThisThread::sleep_for(BLINKING_RATE);
-
-        // Run IMU sequences from Connor's code
-
-        // Run algorithm with new IMU data
-        // myAlgorithm(~,~,~,~,~,~);
-
-    }
-}
-
