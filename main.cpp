@@ -151,7 +151,7 @@ int main()
             delta = time - prev_time; //gets a change in time to be used in calculations
 
 
-            for (int i; i < sizeof(acc); i++)
+            for (int i; i < 6; i++)
             {
                 //kinematic equations
                 vel[i] = velocity(prev_vel[i], acc[i], delta);
@@ -168,8 +168,8 @@ int main()
             // plug in new position to myalgorithm()
             motor0.setDuty(myAlgorithm(pos[3],pos[4],0));
 
-            printf("\nx_lean = %f", pos[3]); //print pos 0
-            printf("\ny_lean = %f",  pos[4]); //print pos 1
+            printf("\nx_lean: %f", pos[3]);    //print pos 3
+            printf("\ny_lean: %f", pos[4]);   //print pos 4
             printf("\nSensor Temperature = %f", imuTemperature);
 
             updates++;
