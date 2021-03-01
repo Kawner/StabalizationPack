@@ -9,8 +9,6 @@
 #include <cmath>
 #include <cstdio>
 
-// define LED Blinking rate in milliseconds
-#define BLINKING_RATE     100ms 
 // define PI
 #define PI 3.141592654
 
@@ -44,27 +42,46 @@ int clamp(float value) {
 }
 
 // Create the algorithm function that runs in infinite while loop
-void myAlgorithm(float ac_x, float ac_y, float ac_z, float gy_x, float gy_y, float gy_z)
+int myAlgorithm(float gy_x, float gy_y, int which_motor)
 {
     // First task is to interpret the inputs
     int myMagnitude = sqrt(gy_x*gy_x + gy_y*gy_y);
-    float myAngle = atan2(ac_y, ac_x);
+    float myAngle = atan2(gy_y, gy_x);
+    int AutoDuty = 0; //predefine this variable
     
     // Second task is to build a radial system that gradually adjusts the individual motor's strength. 
     // Gradual and smooth feedback will allow the patients brain to recognize new patterns and feel 
     // their movements in a more natural way... no glitchy stuff
     if(myMagnitude >= SAFEZONE) {
-        int AutoDuty_0 = clamp(K_p*(myMagnitude-SAFEZONE)*cos(myAngle-motor0_angle)); // Autoduty for motor 0
-        int AutoDuty_1 = clamp(K_p*(myMagnitude-SAFEZONE)*cos(myAngle-motor1_angle)); // Autoduty for motor 1
-        int AutoDuty_2 = clamp(K_p*(myMagnitude-SAFEZONE)*cos(myAngle-motor2_angle)); // Autoduty for motor 2
-        int AutoDuty_3 = clamp(K_p*(myMagnitude-SAFEZONE)*cos(myAngle-motor3_angle)); // Autoduty for motor 3
-        int AutoDuty_4 = clamp(K_p*(myMagnitude-SAFEZONE)*cos(myAngle-motor4_angle)); // Autoduty for motor 0
-        int AutoDuty_5 = clamp(K_p*(myMagnitude-SAFEZONE)*cos(myAngle-motor5_angle)); // Autoduty for motor 0
-        int AutoDuty_6 = clamp(K_p*(myMagnitude-SAFEZONE)*cos(myAngle-motor6_angle)); // Autoduty for motor 0
-        int AutoDuty_7 = clamp(K_p*(myMagnitude-SAFEZONE)*cos(myAngle-motor7_angle)); // Autoduty for motor 0
+        if(which_motor == 0) {
+            AutoDuty = clamp(K_p*(myMagnitude-SAFEZONE)*cos(myAngle-motor0_angle)); // Autoduty for motor 0
+
+        }
+        if(which_motor == 1) {
+            AutoDuty = clamp(K_p*(myMagnitude-SAFEZONE)*cos(myAngle-motor1_angle)); // Autoduty for motor 1
+        }
+        if(which_motor == 2) {
+            AutoDuty = clamp(K_p*(myMagnitude-SAFEZONE)*cos(myAngle-motor2_angle)); // Autoduty for motor 2
+        }
+        if(which_motor == 3) {
+            AutoDuty = clamp(K_p*(myMagnitude-SAFEZONE)*cos(myAngle-motor3_angle)); // Autoduty for motor 3
+        }
+        if(which_motor == 4) {
+            AutoDuty = clamp(K_p*(myMagnitude-SAFEZONE)*cos(myAngle-motor4_angle)); // Autoduty for motor 4
+        }
+        if(which_motor == 5) {
+            AutoDuty = clamp(K_p*(myMagnitude-SAFEZONE)*cos(myAngle-motor5_angle)); // Autoduty for motor 5
+        }
+        if(which_motor == 6) {
+            AutoDuty = clamp(K_p*(myMagnitude-SAFEZONE)*cos(myAngle-motor6_angle)); // Autoduty for motor 6
+        }
+        if(which_motor == 7) {
+            AutoDuty = clamp(K_p*(myMagnitude-SAFEZONE)*cos(myAngle-motor7_angle)); // Autoduty for motor 7
+        }
     }
+    else {
+        AutoDuty = 0;
+    };
 
-    // Third task is to run Miles' set duty motor functions
-    
-
+    return AutoDuty;
 }

@@ -3,6 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+/*
 #include "mbed.h"
 #include "MotorDriver.h"
 
@@ -62,3 +63,4 @@ int main()
 
     return 0;
 }
+*/

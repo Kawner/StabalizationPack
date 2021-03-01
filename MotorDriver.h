@@ -35,18 +35,18 @@ class motor : virtual public MAX32630FTHR_PwmOut {
 
     }
 
-    void setDuty(float newDuty){
+    void setDuty(int newDuty){
 
 
-        printf("Motor %i duty cycle set to: %F", num, newDuty);
+        printf("Motor %i duty cycle set to: %i", num, newDuty);
         this->write(newDuty);
     
     }
 
     void printDuty(){
 
-        float currDuty = this->read();
-        printf("Motor %i current duty cycle: %0.2F %% \r\n", num, currDuty);
+        int currDuty = this->read();
+        printf("Motor %i current duty cycle: %i \r\n", num, currDuty);
 
     }
 

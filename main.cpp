@@ -5,16 +5,11 @@ This code was developed and organized by the Outer Ear Design team for the
 
 #include "mbed.h"                 // mbed header file
 #include "MAX32630FTHR_PwmOut.h"  // PWM driver via manufacturer
-#include "MotorDriver.h"          // Motor driver class developed by Miles Young
+#include "MotorDriver.h"
 
-#include "bmi160.h"               // 
+
+#include "bmi160.h"               // include IMU interface functionality
 #include "algorithm.h"
-
-
-// >> 
-#define SAFEZONE 0.5 // [deg], This safezone is so that the motors do not buzz for normal movement
-#define PWM_cap 100 // [%], Sets the maximum allowable duty - CANNOT BE GREATER THAN 100%
-#define TILT_LIM 15 // [deg], This tilt magnitude will tell the motors to run at 100% allowable duty
 
 float velocity(float prev_vel, float acc, float delta); 
 float position(float prev_pos, float prev_vel,  float acc, float delta, float avg);
@@ -25,38 +20,19 @@ void printBlock(BMI160 &imu, BMI160::Registers startReg, BMI160::Registers stopR
 //>>>>>>> 796634fb8c0352c192491c31978aa6f8486772a3
 int main()
 {
-    // Initialize Motor Objects from MotorDriver.h
-    motor motor0(1,LED1);
-    motor motor4(1,LED2);
-    motor motor2(1,LED3);
-
-    // define performance parameters
-
-    #define SAFEZONE 0.5 // [deg], This safezone is so that the motors do not buzz for normal movement
-    #define PWM_cap 100 // [%], Sets the maximum allowable duty - CANNOT BE GREATER THAN 100%
-    #define TILT_LIM 15 // [deg], This tilt magnitude will tell the motors to run at 100% allowable duty
+    // initialize motor
+    motor motor0(1, LED3);
 
     // initialize IMU
-    //initIMU();
-    // Maybe here we can just copy and paste the code from initIMU()?
-
-
-    // Initialise the digital pin LED1 as an output
-    //DigitalOut led(LED2);
-
-    
-    DigitalOut rLED(LED1, LED_OFF);
-    DigitalOut gLED(LED2, LED_OFF);
-    DigitalOut bLED(LED3, LED_OFF);
-    
     I2C i2cBus(P5_7, P6_0);
     i2cBus.frequency(400000);
     BMI160_I2C imu(i2cBus, BMI160_I2C::I2C_ADRS_SDO_LO);
-    
+
     printf("\033[H");  //home
     printf("\033[0J");  //erase from cursor to end of screen
     
     uint32_t failures = 0;
+    uint32_t updates = 0;
     
     if(imu.setSensorPowerMode(BMI160::GYRO, BMI160::NORMAL) != BMI160::RTN_NO_ERROR)
     {
@@ -93,6 +69,7 @@ int main()
     accConfig.us = BMI160::ACC_US_OFF;
     accConfig.bwp = BMI160::ACC_BWP_2;
     accConfig.odr = BMI160::ACC_ODR_8;
+
     if(imu.setSensorConfig(accConfig) == BMI160::RTN_NO_ERROR)
     {
         printf("ACC Range = %d\n", accConfig.range);
@@ -124,6 +101,12 @@ int main()
     printf("\033[0J");  //erase from cursor to end of screen
 
 
+    // Initialize status LEDs
+    DigitalOut rLED(LED1, LED_OFF);     // red LED
+    DigitalOut gLED(LED2, LED_OFF);     // green LED
+    // DigitalOut bLED(LED3, LED_OFF);  // blue LED -- not required
+
+
     if(failures == 0)
     {
         //setup values
@@ -134,9 +117,12 @@ int main()
         
         float delta;
         float avg = 0.5;
-        float acc[6], vel[6], pos[6];
+        float acc[] = {0, 0, 0, 0, 0, 0};
+        float vel[] = {0, 0, 0, 0, 0, 0};
+        float pos[] = {0, 0, 0, 0, 0, 0};
         float prev_time, time;
-        float prev_vel[6], prev_pos[6];
+        float prev_vel[] = {0, 0, 0, 0, 0, 0};
+        float prev_pos[] = {0, 0, 0, 0, 0, 0};
 
         while(1)
         {
@@ -175,38 +161,21 @@ int main()
                 prev_pos[i] = pos[i];
                 prev_vel[i] = vel[i];
             }
-                prev_time = time;            
 
-                
-
-            // update IMU
+            //set prev time after so its not looped           
+            prev_time = time;            
 
             // plug in new position to myalgorithm()
-            myAlgorithm(pos[0],pos[1],pos[2],pos[3],pos[4],pos[5]);
+            motor0.setDuty(myAlgorithm(pos[3],pos[4],0));
 
-            // set motors()
-           // motor1.setDuty(duty);
+            printf("\nx_lean = %f", pos[3]); //print pos 0
+            printf("\ny_lean = %f",  pos[4]); //print pos 1
+            printf("\nSensor Temperature = %f", imuTemperature);
 
-
-            
-
-            //printf("Acc = %s%f", "\033[K", acc[0]); //print acc, vel, pos
-            //printf("Vel = %s%f", "\033[K", vel[0]); //broken rn so im finding other ways to store it
-            //printf("Pos = %s%f", "\033[K", pos[0]);
-            
-            //printf("GYRO xAxis = %s%5.1f\n", "\033[K", gyroData.xAxis.scaled);
-            //printf("GYRO yAxis = %s%5.1f\n", "\033[K", gyroData.yAxis.scaled);
-            //printf("GYRO zAxis = %s%5.1f\n\n", "\033[K", gyroData.zAxis.scaled);
-            
-            //printf("Sensor Time = %s%f\n", "\033[K", sensorTime.seconds);
-            //printf("Sensor Temperature = %s%5.3f\n", "\033[K", imuTemperature);
-
-            
-            //updates++;
-            //printf("\033[H");
-            //printf("\033[0J");  //home
-            gLED = !gLED; //show code is working
-            
+            updates++;
+            printf("\033[H");
+            printf("\033[0J");  //home
+            //gLED = !gLED; //show code is working
         }
     }
     else
@@ -214,10 +183,9 @@ int main()
         while(1)
         {
             rLED = !rLED;
-            wait_us(250000);
+            wait_us(250000); // indicate the system has crashed
         }
     }
-    return 0;
 }
 
 
